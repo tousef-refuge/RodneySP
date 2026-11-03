@@ -11,13 +11,16 @@ class Sprite:
         self.rotation = 0.0
         self.origin = QtCore.QPointF(ox, oy)
 
-        self.animations = {}
+        self._animations = {}
         self.current_animation = None
         self.frame = 0
 
     # they could never make me hate you operation overloading
+    def __getitem__(self, name):
+        return self._animations[name]
+
     def __setitem__(self, name, animation):
-        self.animations[name] = animation
+        self._animations[name] = animation
 
     def render(self, painter: QtGui.QPainter):
         if not self.current_animation:
