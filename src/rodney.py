@@ -1,6 +1,6 @@
 from animation import AnimationControls
 from PySide6 import QtCore, QtGui, QtWidgets
-from src import RodneyState, WIDGET_SIZE
+from src import RodneyState, WIDGET_SIZE, WIDGET_PADDING
 import os
 FPS = 60
 
@@ -19,8 +19,8 @@ class Rodney(QtWidgets.QWidget):
 
         screen = self.screen().availableGeometry()
         self.move(
-            screen.right() - self.width(),
-            screen.bottom() - self.height()
+            screen.right() - self.width() + WIDGET_PADDING,
+            screen.bottom() - self.height() + WIDGET_PADDING
         )
 
         self.state = RodneyState.IDLE
