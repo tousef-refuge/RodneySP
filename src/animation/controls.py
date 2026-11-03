@@ -16,8 +16,7 @@ class AnimationControls(QtCore.QObject):
 
     def play(self, state: RodneyState):
         for name, sprite in self._sprites.items():
-            sprite.current_animation = sprite[state]
-            sprite.frame = 0
+            sprite.idx = 0
 
     def render(self, painter: QtGui.QPainter):
         for name, sprite in self._sprites.items():
@@ -25,8 +24,6 @@ class AnimationControls(QtCore.QObject):
 
     def update(self, dt):
         for name, sprite in self._sprites.items():
-            if sprite.current_animation is None:
-                continue
             self._update(name, sprite, dt)
 
     def _update(self, name, sprite, dt):
