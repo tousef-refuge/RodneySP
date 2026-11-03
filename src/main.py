@@ -2,7 +2,7 @@ import sys
 from dotenv import load_dotenv
 from PySide6 import QtWidgets
 
-from .paths import ROOT
+from src import ROOT
 from .rodney import Rodney
 
 def main():
