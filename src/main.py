@@ -1,8 +1,12 @@
 import sys
-from .rodney import Rodney
+from dotenv import load_dotenv
 from PySide6 import QtWidgets
 
+from .paths import ROOT
+from .rodney import Rodney
+
 def main():
+    load_dotenv(ROOT / ".env")
     app = QtWidgets.QApplication(sys.argv)
     rodney = Rodney()
     rodney.show()
