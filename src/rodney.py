@@ -1,6 +1,7 @@
 from animation import AnimationControls
 from PySide6 import QtCore, QtGui, QtWidgets
 from src import RodneyState, WIDGET_SIZE
+import os
 FPS = 60
 
 class Rodney(QtWidgets.QWidget):
@@ -13,7 +14,8 @@ class Rodney(QtWidgets.QWidget):
             QtCore.Qt.WindowType.WindowStaysOnTopHint |
             QtCore.Qt.WindowType.Tool
         )
-        # self.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground) TODO: uncomment this later
+        if os.getenv("SOLID_BG") != "true":
+            self.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground)
 
         screen = self.screen().availableGeometry()
         self.move(
