@@ -57,7 +57,7 @@ class Rodney(QtWidgets.QWidget):
         self.idle_timer = QtCore.QTimer(self)
         self.idle_timer.setSingleShot(True)
         self.idle_timer.timeout.connect(self._on_idle_finish)
-        self.idle_timer.start(idle_time())
+        self.idle_timer.start(max(idle_time(), 5000))
 
     def _play_sound(self, path):
         self.audio_controls.setSource(QtCore.QUrl.fromLocalFile(path))
@@ -98,10 +98,16 @@ class Rodney(QtWidgets.QWidget):
             sys.exit(0)
 
     def _on_idle_finish(self):
+        if self.is_closing:
+            return
+
         self.anim_controls.play(RodneyState.ENTER)
         self._play_sound(IDLE_DIR / random.choice(IDLE_VOICELINES))
 
     def _on_sound_end(self, status):
+        if self.is_closing:
+            return
+
         if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
             self.idle_timer.start(idle_time())
             self.anim_controls.play(RodneyState.EXIT)
