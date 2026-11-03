@@ -1,13 +1,13 @@
 from animation import AnimationControls
 from PySide6 import QtCore, QtGui, QtWidgets
-from src import RodneyState
+from src import RodneyState, WIDGET_SIZE
 FPS = 60
 
 class Rodney(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setFixedSize(400, 400)
+        self.setFixedSize(WIDGET_SIZE, WIDGET_SIZE)
         self.setWindowFlags(
             QtCore.Qt.WindowType.FramelessWindowHint |
             QtCore.Qt.WindowType.WindowStaysOnTopHint |

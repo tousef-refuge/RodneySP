@@ -1,5 +1,5 @@
 from PySide6 import QtCore, QtGui
-from src import ASSETS_DIR, RodneyState
+from src import *
 from .sprite import Sprite
 
 class AnimationControls(QtCore.QObject):
@@ -10,15 +10,15 @@ class AnimationControls(QtCore.QObject):
         self.state = RodneyState.IDLE
         self._sprites = {}
 
-        body = Sprite(0, 0, 100, 100)
+        body = Sprite(BODY_X, BODY_Y, BODY_WIDTH, BODY_HEIGHT)
         body.add_frames(ASSETS_DIR / "sprites" / "body.png")
         self._sprites["body"] = body
 
-        neck = Sprite(0, 0, 100, 100)
+        neck = Sprite(NECK_X, NECK_Y, NECK_WIDTH, NECK_HEIGHT)
         neck.add_frames(ASSETS_DIR / "sprites" / "neck.png")
         self._sprites["neck"] = neck
 
-        head = Sprite(0, 0, 100, 100)
+        head = Sprite(HEAD_X, HEAD_Y, HEAD_WIDTH, HEAD_HEIGHT)
         head.add_frames(
             ASSETS_DIR / "sprites" / f"head_idle.png",
             ASSETS_DIR / "sprites" / f"head_blink.png",
