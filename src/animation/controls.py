@@ -9,7 +9,7 @@ class AnimationControls(QtCore.QObject):
 
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update)
-        self.timer.start(20)
+        self.timer.start(16) # TODO: maybe add an env for this
 
         self._sprites = {}
 
