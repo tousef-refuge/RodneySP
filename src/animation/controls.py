@@ -6,6 +6,7 @@ class AnimationControls(QtCore.QObject):
 
     def __init__(self):
         super().__init__()
+        self.state = RodneyState.IDLE
         self._sprites = {}
 
     def __getitem__(self, name):
@@ -17,6 +18,7 @@ class AnimationControls(QtCore.QObject):
     def play(self, state: RodneyState):
         for name, sprite in self._sprites.items():
             sprite.idx = 0
+        self.state = state
 
     def render(self, painter: QtGui.QPainter):
         for name, sprite in self._sprites.items():
