@@ -1,3 +1,4 @@
+import signal
 import sys
 from dotenv import load_dotenv
 from PySide6 import QtWidgets
@@ -10,4 +11,10 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     rodney = Rodney()
     rodney.show()
+
+    # noinspection PyUnusedLocal
+    def handle_interrupt(sig, frame):
+        rodney.close()
+    signal.signal(signal.SIGINT, handle_interrupt)
+
     sys.exit(app.exec())
