@@ -1,4 +1,4 @@
-from PySide6 import QtCore
+from PySide6 import QtCore, QtGui
 
 class AnimationControls(QtCore.QObject):
     def __init__(self):
@@ -18,6 +18,10 @@ class AnimationControls(QtCore.QObject):
 
     def __setitem__(self, name, sprite):
         self._sprites[name] = sprite
+
+    def render(self, painter: QtGui.QPainter):
+        for name, sprite in self._sprites.items():
+            sprite.render(painter)
 
     def update(self):
         dt = self.clock.restart() / 1000.0
