@@ -1,9 +1,17 @@
 from animation import AnimationControls
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 from src import *
+
 import os
+import random
 import sys
+
 FPS = 60
+IDLE_DIR = ASSETS_DIR / "audio" / "idle"
+IDLE_VOICELINES = os.listdir(IDLE_DIR)
+
+def idle_time():
+    return int(IDLE_BASE_TIME * random.uniform(1 - IDLE_VARIANCE, 1 + IDLE_VARIANCE))
 
 class Rodney(QtWidgets.QWidget):
     def __init__(self):
@@ -45,6 +53,12 @@ class Rodney(QtWidgets.QWidget):
         self.fps_timer.timeout.connect(self._update_animation)
         self.fps_timer.start(1000 // FPS)
 
+        # idle timer
+        self.idle_timer = QtCore.QTimer(self)
+        self.idle_timer.setSingleShot(True)
+        self.idle_timer.timeout.connect(self._on_idle_finish)
+        self.idle_timer.start(idle_time())
+
     def _play_sound(self, path):
         self.audio_controls.setSource(QtCore.QUrl.fromLocalFile(path))
         self.audio_controls.play()
@@ -83,6 +97,11 @@ class Rodney(QtWidgets.QWidget):
             self.close()
             sys.exit(0)
 
-    # TODO: implement state change on this
+    def _on_idle_finish(self):
+        self.anim_controls.play(RodneyState.ENTER)
+        self._play_sound(IDLE_DIR / random.choice(IDLE_VOICELINES))
+
     def _on_sound_end(self, status):
-        pass
+        if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
+            self.idle_timer.start(idle_time())
+            self.anim_controls.play(RodneyState.EXIT)
