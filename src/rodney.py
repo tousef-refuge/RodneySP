@@ -1,11 +1,4 @@
-from enum import Enum, auto
 from PySide6 import QtCore, QtWidgets
-
-class RodneyState(Enum):
-    IDLE = auto()
-    ENTER = auto()
-    TALKING = auto()
-    EXIT = auto()
 
 class Rodney(QtWidgets.QWidget):
     def __init__(self):
