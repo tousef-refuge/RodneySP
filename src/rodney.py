@@ -1,6 +1,6 @@
 from animation import AnimationControls
-from PySide6 import QtCore, QtGui, QtWidgets
-from src import RodneyState, WIDGET_SIZE, WIDGET_PADDING
+from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
+from src import *
 import os
 FPS = 60
 
@@ -23,8 +23,13 @@ class Rodney(QtWidgets.QWidget):
             screen.bottom() - self.height() + WIDGET_PADDING
         )
 
+        self.output = QtMultimedia.QAudioOutput(self)
+        self.audio_controls = QtMultimedia.QMediaPlayer(self)
+        self.audio_controls.setAudioOutput(self.output)
+        self.output.setVolume(AUDIO_VOLUME)
+
         self.state = RodneyState.IDLE
-        self.animcontrols = AnimationControls()
+        self.anim_controls = AnimationControls()
 
         self.clock = QtCore.QElapsedTimer()
         self.clock.start()
@@ -33,9 +38,13 @@ class Rodney(QtWidgets.QWidget):
         self.fps_timer.timeout.connect(self._update_animation)
         self.fps_timer.start(1000 // FPS)
 
+    def _play_sound(self, path):
+        self.audio_controls.setSource(QtCore.QUrl.fromLocalFile(path))
+        self.audio_controls.play()
+
     def _update_animation(self):
         dt = self.clock.restart()
-        self.animcontrols.update(dt)
+        self.anim_controls.update(dt)
         self.update()
 
     def paintEvent(self, event):
@@ -43,5 +52,5 @@ class Rodney(QtWidgets.QWidget):
         painter.setRenderHint(
             QtGui.QPainter.RenderHint.SmoothPixmapTransform
         )
-        self.animcontrols.render(painter)
+        self.anim_controls.render(painter)
         painter.end()
