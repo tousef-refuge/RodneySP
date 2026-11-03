@@ -65,7 +65,7 @@ class Rodney(QtWidgets.QWidget):
 
     def _update_animation(self):
         dt = self.clock.restart()
-        self.anim_controls.update(dt)
+        self.anim_controls.update(dt / 1000)
         self.update()
 
     def paintEvent(self, event):
