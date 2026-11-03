@@ -31,6 +31,9 @@ class Rodney(QtWidgets.QWidget):
         self.state = RodneyState.IDLE
         self.anim_controls = AnimationControls()
 
+        if os.getenv("PLAY_STARTOGG") != "false":
+            self._play_sound(ASSETS_DIR / "audio" / "start.ogg")
+
         self.clock = QtCore.QElapsedTimer()
         self.clock.start()
 
