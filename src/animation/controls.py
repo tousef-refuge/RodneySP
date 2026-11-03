@@ -1,6 +1,7 @@
 from PySide6 import QtCore, QtGui
 from src import *
 from .sprite import Sprite
+import random
 
 def lerp(a, b, t):
     return a + (b - a) * t
@@ -12,7 +13,10 @@ class AnimationControls(QtCore.QObject):
         super().__init__()
         self.state = RodneyState.IDLE
         self._sprites = {}
+
         self.elapsed = 0.0
+        self.is_blinking = False
+        self.blink_time = BLINK_TIME
 
         body = Sprite(BODY_X, BODY_Y, BODY_WIDTH, BODY_HEIGHT)
         body.add_frames(ASSETS_DIR / "sprites" / "body.png")
@@ -37,22 +41,36 @@ class AnimationControls(QtCore.QObject):
         self._sprites[name] = sprite
 
     def play(self, state: RodneyState):
-        for name, sprite in self._sprites.items():
-            sprite.idx = 0
         self.state = state
         self.elapsed = 0.0
+        if state == RodneyState.ENTER or state == RodneyState.EXIT:
+            self.is_blinking = True
+            self.blink_time = BLINK_TIME
 
     def render(self, painter: QtGui.QPainter):
         for name, sprite in self._sprites.items():
             sprite.render(painter)
 
     def update(self, dt):
+        if not self.is_blinking and not random.randrange(RANDOM_BLINK_CHANCE):
+            self.is_blinking = True
+            self.blink_time = BLINK_TIME
+
+        # this guy is gonna stare at your soul while yapping
+        if self.blink_time <= 0:
+            self.is_blinking &= self.state != RodneyState.TALKING
+
         self.elapsed += dt
         for name, sprite in self._sprites.items():
             self._update(name, sprite, dt)
 
         # blinking sorta
-        if self.elapsed > BLINK_TIME:
+        if self.is_blinking:
+            self.blink_time -= dt
+            if self.blink_time <= 0:
+                self.is_blinking = False
+                self.blink_time = BLINK_TIME
+
             if self.state == RodneyState.ENTER:
                 self.play(RodneyState.TALKING)
 
@@ -63,4 +81,6 @@ class AnimationControls(QtCore.QObject):
         # TODO: actually ACTUALLY implement the animation here (oh boy)
         if name == "head":
             idx = 0 if self.state == RodneyState.IDLE else (2 if self.state == RodneyState.TALKING else 1)
+            if self.is_blinking:
+                idx = 1
             sprite.idx = idx
