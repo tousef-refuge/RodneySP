@@ -2,6 +2,9 @@ from PySide6 import QtCore, QtGui
 from src import *
 from .sprite import Sprite
 
+def lerp(a, b, t):
+    return a + (b - a) * t
+
 class AnimationControls(QtCore.QObject):
     finished = QtCore.Signal(str)
 
