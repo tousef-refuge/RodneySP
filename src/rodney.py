@@ -74,6 +74,8 @@ class Rodney(QtWidgets.QWidget):
         if os.getenv("PLAY_ENDOGG") != "false":
             self.audio_controls.mediaStatusChanged.connect(self._exit)
             self._play_sound(ASSETS_DIR / "audio" / "end.ogg")
+        else:
+            sys.exit(0)
 
     def _exit(self, status):
         if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
