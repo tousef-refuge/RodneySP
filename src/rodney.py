@@ -10,6 +10,7 @@ class Rodney(QtWidgets.QWidget):
         super().__init__()
         self.is_closing = False
 
+        # window setup
         self.setFixedSize(WIDGET_SIZE, WIDGET_SIZE)
         self.setWindowFlags(
             QtCore.Qt.WindowType.FramelessWindowHint |
@@ -25,21 +26,21 @@ class Rodney(QtWidgets.QWidget):
             screen.bottom() - self.height() + WIDGET_PADDING
         )
 
+        # audio
         self.output = QtMultimedia.QAudioOutput(self)
         self.audio_controls = QtMultimedia.QMediaPlayer(self)
         self.audio_controls.setAudioOutput(self.output)
         self.audio_controls.mediaStatusChanged.connect(self._on_sound_end)
         self.output.setVolume(AUDIO_VOLUME)
 
-        self.state = RodneyState.IDLE
-        self.anim_controls = AnimationControls()
-
         if os.getenv("PLAY_STARTOGG") != "false":
             self._play_sound(ASSETS_DIR / "audio" / "start.ogg")
 
+        # animation
         self.clock = QtCore.QElapsedTimer()
         self.clock.start()
 
+        self.anim_controls = AnimationControls()
         self.fps_timer = QtCore.QTimer(self)
         self.fps_timer.timeout.connect(self._update_animation)
         self.fps_timer.start(1000 // FPS)
