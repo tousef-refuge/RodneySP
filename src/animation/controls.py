@@ -57,8 +57,7 @@ class AnimationControls(QtCore.QObject):
             self.blink_time = BLINK_TIME
 
         # this guy is gonna stare at your soul while yapping
-        if self.blink_time <= 0:
-            self.is_blinking &= self.state != RodneyState.TALKING
+        self.is_blinking &= self.state != RodneyState.TALKING
 
         self.elapsed += dt
         for name, sprite in self._sprites.items():
@@ -71,11 +70,11 @@ class AnimationControls(QtCore.QObject):
                 self.is_blinking = False
                 self.blink_time = BLINK_TIME
 
-            if self.state == RodneyState.ENTER:
-                self.play(RodneyState.TALKING)
+                if self.state == RodneyState.ENTER:
+                    self.play(RodneyState.TALKING)
 
-            if self.state == RodneyState.EXIT:
-                self.play(RodneyState.IDLE)
+                if self.state == RodneyState.EXIT:
+                    self.play(RodneyState.IDLE)
 
     def _update(self, name, sprite, dt):
         # TODO: actually ACTUALLY implement the animation here (oh boy)
