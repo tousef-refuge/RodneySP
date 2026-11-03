@@ -6,7 +6,6 @@ import os
 import random
 import sys
 
-FPS = 60
 IDLE_DIR = ASSETS_DIR / "audio" / "idle"
 IDLE_VOICELINES = os.listdir(IDLE_DIR)
 
@@ -57,7 +56,7 @@ class Rodney(QtWidgets.QWidget):
         self.idle_timer = QtCore.QTimer(self)
         self.idle_timer.setSingleShot(True)
         self.idle_timer.timeout.connect(self._on_idle_finish)
-        self.idle_timer.start(max(idle_time(), 5000))
+        self.idle_timer.start(max(idle_time(), MIN_START_TIME))
 
     def _play_sound(self, path):
         self.audio_controls.setSource(QtCore.QUrl.fromLocalFile(path))
