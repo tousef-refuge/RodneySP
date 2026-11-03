@@ -12,6 +12,7 @@ class AnimationControls(QtCore.QObject):
         super().__init__()
         self.state = RodneyState.IDLE
         self._sprites = {}
+        self.elapsed = 0.0
 
         body = Sprite(BODY_X, BODY_Y, BODY_WIDTH, BODY_HEIGHT)
         body.add_frames(ASSETS_DIR / "sprites" / "body.png")
@@ -39,14 +40,27 @@ class AnimationControls(QtCore.QObject):
         for name, sprite in self._sprites.items():
             sprite.idx = 0
         self.state = state
+        self.elapsed = 0.0
 
     def render(self, painter: QtGui.QPainter):
         for name, sprite in self._sprites.items():
             sprite.render(painter)
 
     def update(self, dt):
+        self.elapsed += dt
         for name, sprite in self._sprites.items():
             self._update(name, sprite, dt)
 
+        # blinking sorta
+        if self.elapsed > BLINK_TIME:
+            if self.state == RodneyState.ENTER:
+                self.play(RodneyState.TALKING)
+
+            if self.state == RodneyState.EXIT:
+                self.play(RodneyState.IDLE)
+
     def _update(self, name, sprite, dt):
-        pass # TODO: actually implement the animation here (oh boy)
+        # TODO: actually ACTUALLY implement the animation here (oh boy)
+        if name == "head":
+            idx = 0 if self.state == RodneyState.IDLE else (2 if self.state == RodneyState.TALKING else 1)
+            sprite.idx = idx
