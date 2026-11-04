@@ -104,7 +104,7 @@ class Rodney(QtWidgets.QWidget):
             sys.exit(0)
 
     def _exit(self, status):
-        if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
+        if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia or AUDIO_VOLUME <= 0:
             self.close()
             sys.exit(0)
 
