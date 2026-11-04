@@ -1,6 +1,7 @@
 from PySide6 import QtCore, QtGui
 from src import *
 from .sprite import Sprite
+import math
 import random
 
 def lerp(a, b, t):
@@ -22,9 +23,10 @@ class AnimationControls(QtCore.QObject):
         body.add_frames(ASSETS_DIR / "sprites" / "body.png")
         self._sprites["body"] = body
 
-        neck = Sprite(NECK_X, NECK_Y, NECK_WIDTH, NECK_HEIGHT)
+        neck = Sprite(NECK_X, NECK_Y, NECK_WIDTH, NECK_HEIGHT, NECK_OX, NECK_OY)
         neck.add_frames(ASSETS_DIR / "sprites" / "neck.png")
         self._sprites["neck"] = neck
+        self.neck_angle = 0
 
         head = Sprite(HEAD_X, HEAD_Y, HEAD_WIDTH, HEAD_HEIGHT)
         head.add_frames(
@@ -33,6 +35,7 @@ class AnimationControls(QtCore.QObject):
             ASSETS_DIR / "sprites" / f"head_talk.png"
         )
         self._sprites["head"] = head
+        self.neck_length = math.hypot(HEAD_X - HEAD_WIDTH * 0.5, HEAD_Y - HEAD_HEIGHT * 0.5)
 
     def __getitem__(self, name):
         return self._sprites[name]
@@ -42,7 +45,6 @@ class AnimationControls(QtCore.QObject):
 
     def play(self, state: RodneyState):
         self.state = state
-        self.elapsed = 0.0
         if state == RodneyState.ENTER or state == RodneyState.EXIT:
             self.is_blinking = True
             self.blink_time = BLINK_TIME
@@ -77,9 +79,27 @@ class AnimationControls(QtCore.QObject):
                     self.play(RodneyState.IDLE)
 
     def _update(self, name, sprite, dt):
-        # TODO: actually ACTUALLY implement the animation here (oh boy)
+        if name == "neck":
+            sprite.rotation = NECK_BOB * math.sin(self.elapsed)
+            self.neck_angle = sprite.rotation
+
         if name == "head":
             idx = 0 if self.state == RodneyState.IDLE else (2 if self.state == RodneyState.TALKING else 1)
             if self.is_blinking:
                 idx = 1
             sprite.idx = idx
+
+            pivot_x = NECK_X + NECK_WIDTH * NECK_OX
+            pivot_y = NECK_Y + NECK_HEIGHT * NECK_OY
+
+            dx = HEAD_X + HEAD_WIDTH * 0.5 - pivot_x
+            dy = HEAD_Y + HEAD_HEIGHT * 0.5 - pivot_y
+
+            angle = math.radians(self.neck_angle)
+            cx = pivot_x + dx * math.cos(angle) - dy * math.sin(angle)
+            cy = pivot_y + dx * math.sin(angle) + dy * math.cos(angle)
+
+            sprite.x = cx - HEAD_WIDTH * 0.5
+            sprite.y = cy - HEAD_HEIGHT * 0.5
+
+            sprite.rotation = self.neck_angle + HEAD_ANGLE_OFFSET * math.cos(self.elapsed)
