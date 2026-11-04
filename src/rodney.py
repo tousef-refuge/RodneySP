@@ -109,7 +109,7 @@ class Rodney(QtWidgets.QWidget):
             sys.exit(0)
 
     def _on_idle_finish(self):
-        if self.is_closing:
+        if self.is_closing or AUDIO_VOLUME <= 0:
             return
 
         self.anim_controls.play(RodneyState.ENTER)
@@ -124,7 +124,7 @@ class Rodney(QtWidgets.QWidget):
         self.move(current + dist * WIDGET_EASING)
 
     def _on_sound_end(self, status):
-        if self.is_closing:
+        if self.is_closing or AUDIO_VOLUME <= 0:
             return
 
         if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
