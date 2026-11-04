@@ -1,4 +1,4 @@
-from animation import AnimationControls
+from .animation import AnimationControls
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 from src import *
 
