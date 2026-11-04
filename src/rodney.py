@@ -21,8 +21,7 @@ class Rodney(QtWidgets.QWidget):
         self.setFixedSize(WIDGET_SIZE, WIDGET_SIZE)
         self.setWindowFlags(
             QtCore.Qt.WindowType.FramelessWindowHint |
-            QtCore.Qt.WindowType.WindowStaysOnTopHint |
-            QtCore.Qt.WindowType.Tool
+            QtCore.Qt.WindowType.WindowStaysOnTopHint
         )
         if os.getenv("SOLID_BG") != "true":
             self.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground)
