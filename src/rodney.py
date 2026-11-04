@@ -28,10 +28,11 @@ class Rodney(QtWidgets.QWidget):
             self.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground)
 
         screen = self.screen().availableGeometry()
-        self.move(
-            screen.right() - self.width() + WIDGET_PADDING,
-            screen.bottom() - self.height() + WIDGET_PADDING
-        )
+        nx = screen.right() - self.width() + WIDGET_PADDING
+        ny = screen.bottom() - self.height() + WIDGET_PADDING
+        self.region = QtCore.QRect(nx, ny, self.width(), self.height())
+        self.move(nx, ny)
+        # if self.region.contains(QtGui.QCursor.pos()):
 
         # audio
         self.output = QtMultimedia.QAudioOutput(self)
@@ -58,6 +59,14 @@ class Rodney(QtWidgets.QWidget):
         self.idle_timer.timeout.connect(self._on_idle_finish)
         self.idle_timer.start(max(idle_time(), MIN_START_TIME))
 
+        # cursor timer
+        self.cursor_timer = QtCore.QTimer(self)
+        self.cursor_timer.timeout.connect(self._on_cursor_finish)
+        self.cursor_timer.start(50)
+
+        self.is_down = False
+        self.original_pos = None
+
     def _play_sound(self, path):
         self.audio_controls.setSource(QtCore.QUrl.fromLocalFile(path))
         self.audio_controls.play()
@@ -66,6 +75,10 @@ class Rodney(QtWidgets.QWidget):
         dt = self.clock.restart()
         self.anim_controls.update(dt / 1000)
         self.update()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.original_pos = self.pos()
 
     def paintEvent(self, event):
         if self.is_closing:
@@ -102,6 +115,16 @@ class Rodney(QtWidgets.QWidget):
 
         self.anim_controls.play(RodneyState.ENTER)
         self._play_sound(IDLE_DIR / random.choice(IDLE_VOICELINES))
+
+    def _on_cursor_finish(self):
+        hovering = self.region.contains(QtGui.QCursor.pos())
+        if hovering and not self.is_down:
+            self.is_down = True
+            self.move(self.original_pos + QtCore.QPoint(0, WIDGET_DOWN))
+
+        elif not hovering and self.is_down:
+            self.is_down = False
+            self.move(self.original_pos)
 
     def _on_sound_end(self, status):
         if self.is_closing:
