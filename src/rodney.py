@@ -62,7 +62,7 @@ class Rodney(QtWidgets.QWidget):
         # cursor timer
         self.cursor_timer = QtCore.QTimer(self)
         self.cursor_timer.timeout.connect(self._on_cursor_finish)
-        self.cursor_timer.start(50)
+        self.cursor_timer.start(CURSOR_CHECK_TIMER)
 
         self.is_down = False
         self.original_pos = None
@@ -117,14 +117,12 @@ class Rodney(QtWidgets.QWidget):
         self._play_sound(IDLE_DIR / random.choice(IDLE_VOICELINES))
 
     def _on_cursor_finish(self):
-        hovering = self.region.contains(QtGui.QCursor.pos())
-        if hovering and not self.is_down:
-            self.is_down = True
-            self.move(self.original_pos + QtCore.QPoint(0, WIDGET_DOWN))
+        self.is_down = self.region.contains(QtGui.QCursor.pos())
+        target = self.original_pos + QtCore.QPoint(0, WIDGET_DOWN if self.is_down else 0)
 
-        elif not hovering and self.is_down:
-            self.is_down = False
-            self.move(self.original_pos)
+        current = self.pos()
+        dist = target - current
+        self.move(current + dist * WIDGET_EASING)
 
     def _on_sound_end(self, status):
         if self.is_closing:
