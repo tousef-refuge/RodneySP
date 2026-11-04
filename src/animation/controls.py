@@ -4,6 +4,7 @@ from .sprite import Sprite
 import math
 import random
 
+# i thought id use this more gg
 def lerp(a, b, t):
     return a + (b - a) * t
 
@@ -28,7 +29,7 @@ class AnimationControls(QtCore.QObject):
         self._sprites["neck"] = neck
         self.neck_angle = 0
 
-        head = Sprite(HEAD_X, HEAD_Y, HEAD_WIDTH, HEAD_HEIGHT)
+        head = Sprite(HEAD_X, HEAD_Y, HEAD_WIDTH, HEAD_HEIGHT, HEAD_OX, HEAD_OY)
         head.add_frames(
             ASSETS_DIR / "sprites" / f"head_idle.png",
             ASSETS_DIR / "sprites" / f"head_blink.png",
@@ -36,6 +37,7 @@ class AnimationControls(QtCore.QObject):
         )
         self._sprites["head"] = head
         self.neck_length = math.hypot(HEAD_X - HEAD_WIDTH * 0.5, HEAD_Y - HEAD_HEIGHT * 0.5)
+        self.head_turn = 0
 
     def __getitem__(self, name):
         return self._sprites[name]
@@ -63,7 +65,7 @@ class AnimationControls(QtCore.QObject):
 
         self.elapsed += dt
         for name, sprite in self._sprites.items():
-            self._update(name, sprite, dt)
+            self._update(name, sprite)
 
         # blinking sorta
         if self.is_blinking:
@@ -78,7 +80,10 @@ class AnimationControls(QtCore.QObject):
                 if self.state == RodneyState.EXIT:
                     self.play(RodneyState.IDLE)
 
-    def _update(self, name, sprite, dt):
+        target = -HEAD_TILT_ANGLE if self.state == RodneyState.TALKING else 0
+        self.head_turn = lerp(self.head_turn, target, 1.0 - math.exp(-HEAD_TILT_SPEED * dt))
+
+    def _update(self, name, sprite):
         if name == "neck":
             sprite.rotation = NECK_BOB * math.sin(self.elapsed)
             self.neck_angle = sprite.rotation
@@ -102,4 +107,4 @@ class AnimationControls(QtCore.QObject):
             sprite.x = cx - HEAD_WIDTH * 0.5
             sprite.y = cy - HEAD_HEIGHT * 0.5
 
-            sprite.rotation = self.neck_angle + HEAD_ANGLE_OFFSET * math.cos(self.elapsed)
+            sprite.rotation = self.neck_angle + HEAD_ANGLE_OFFSET * math.cos(self.elapsed) + self.head_turn
